@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: contrasena
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      
+  auth-service:
+    build: ./backend/auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=contrasena
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+    depends_on:
+      - database
+
+  product-service:
+    build: ./backend/product-service
+    ports:
+      - "3002:3002"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=contrasena
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+    depends_on:
+      - database
+
+  order-service:
+    build: ./backend/order-service
+    ports:
+      - "3003:3003"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=contrasena
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+    depends_on:
+      - database
+
+  user-service:
+    build: ./backend/user-service
+    ports:
+      - "3004:3004"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=contrasena
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+    depends_on:
+      - database
