@@ -10,8 +10,6 @@ app.get('/health', (req, res) => {
   res.send('Service is running');
 });
 
-
-
 // Crear un nuevo usuario (sin cifrar la contraseña)
 app.post('/users', async (req, res) => {
   const { name, email, password } = req.body;
@@ -30,6 +28,16 @@ app.post('/users', async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ error: 'Error while creating user' });
+  }
+});
+
+// Obtener todos los usuarios
+app.get('/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM users');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Error while fetching users' });
   }
 });
 
