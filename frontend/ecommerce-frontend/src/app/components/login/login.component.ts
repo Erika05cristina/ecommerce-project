@@ -24,7 +24,7 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login exitoso:', response);
         // Puedes almacenar un token o alguna información aquí si es necesario
-        this.router.navigate(['/dashboard']);  // Redirigir al dashboard u otra página
+        this.router.navigate(['/products']);  // Redirigir al dashboard u otra página
       },
       error: (error) => {
         console.error('Error al hacer login:', error);

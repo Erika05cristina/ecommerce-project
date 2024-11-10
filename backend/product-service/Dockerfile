@@ -10,6 +10,8 @@ COPY package*.json ./
 # Instala las dependencias
 RUN npm install
 
+RUN npm install cors
+
 # Copia el resto de los archivos de la aplicación
 COPY . .
 
