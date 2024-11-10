@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   # Servicio para la base de datos PostgreSQL (usuarios)
@@ -19,10 +18,10 @@ services:
   mysql-db:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword  # Establecer la contraseña para root
-      MYSQL_DATABASE: ecommerce  # Base de datos por defecto
+      MYSQL_ROOT_PASSWORD: rootpassword  
+      MYSQL_DATABASE: ecommerce  
     ports:
-      - "3307:3306"  # Cambié el puerto de la base de datos MySQL (de 3306 a 3307 para evitar conflictos)
+      - "3307:3306"
     volumes:
       - ./database/mysql/init-products.sql:/docker-entrypoint-initdb.d/init-products.sql
     networks:
@@ -50,15 +49,34 @@ services:
     ports:
       - "3002:3002"
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword  # Se usa la contraseña del root
+      - MYSQL_ROOT_PASSWORD=rootpassword  
       - MYSQL_HOST=mysql-db
-      - MYSQL_PORT=3306  # Puerto estándar de MySQL
-      - MYSQL_DB=ecommerce  # Base de datos
+      - MYSQL_PORT=3306  
+      - MYSQL_DB=ecommerce  
     depends_on:
       - mysql-db
+    networks:
+      - ecommerce-net
+
+  # Servicio adicional para guardar usuarios en YAML (user-logger)
+  user-logger:
+    build: ./backend/user-logger
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=contrasena
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+    volumes:
+      - ./frontend/users-output:/output   # Carpeta para almacenar el archivo YAML
+    depends_on:
+      - database
     networks:
       - ecommerce-net
 
 networks:
   ecommerce-net:
     driver: bridge
+
+volumes:
+  logs:

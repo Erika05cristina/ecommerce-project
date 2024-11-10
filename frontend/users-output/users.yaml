@@ -1,0 +1,12 @@
+- id: 1
+  name: Erika
+  email: erika1@gmail.com
+  password: mypassword
+- id: 2
+  name: Juan
+  email: juan@example.com
+  password: password123
+- id: 3
+  name: Maria
+  email: maria@example.com
+  password: password123
