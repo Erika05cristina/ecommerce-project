@@ -1,7 +1,9 @@
 version: '3.8'
+
 services:
+  # Servicio para la base de datos PostgreSQL (usuarios)
   database:
-    image: postgres
+    image: postgres:13
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: contrasena
@@ -9,8 +11,24 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-         
+      - ./database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ecommerce-net
+
+  # Servicio para la base de datos MySQL (productos)
+  mysql-db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Establecer la contraseña para root
+      MYSQL_DATABASE: ecommerce  # Base de datos por defecto
+    ports:
+      - "3307:3306"  # Cambié el puerto de la base de datos MySQL (de 3306 a 3307 para evitar conflictos)
+    volumes:
+      - ./database/mysql/init-products.sql:/docker-entrypoint-initdb.d/init-products.sql
+    networks:
+      - ecommerce-net
+
+  # Servicio de autenticación para los usuarios (auth-service)
   auth-service:
     build: ./backend/auth-user-service
     ports:
@@ -23,42 +41,24 @@ services:
       - DB_NAME=ecommerce
     depends_on:
       - database
+    networks:
+      - ecommerce-net
 
+  # Servicio de productos (product-service)
   product-service:
     build: ./backend/product-service
     ports:
       - "3002:3002"
     environment:
-      - DB_USER=postgres
-      - DB_PASSWORD=contrasena
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_NAME=ecommerce
+      - MYSQL_ROOT_PASSWORD=rootpassword  # Se usa la contraseña del root
+      - MYSQL_HOST=mysql-db
+      - MYSQL_PORT=3306  # Puerto estándar de MySQL
+      - MYSQL_DB=ecommerce  # Base de datos
     depends_on:
-      - database
+      - mysql-db
+    networks:
+      - ecommerce-net
 
-  order-service:
-    build: ./backend/order-service
-    ports:
-      - "3003:3003"
-    environment:
-      - DB_USER=postgres
-      - DB_PASSWORD=contrasena
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_NAME=ecommerce
-    depends_on:
-      - database
-
-  user-service:
-    build: ./backend/user-service
-    ports:
-      - "3004:3004"
-    environment:
-      - DB_USER=postgres
-      - DB_PASSWORD=contrasena
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_NAME=ecommerce
-    depends_on:
-      - database
+networks:
+  ecommerce-net:
+    driver: bridge
