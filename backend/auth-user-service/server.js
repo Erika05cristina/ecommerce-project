@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const pool = require('./config/db'); // Conexión a la base de datos
 require('dotenv').config();
-
+const cors = require('cors');
+app.use(cors());
 app.use(express.json());
 
 // Ruta de verificación de salud
