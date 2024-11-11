@@ -74,10 +74,36 @@ services:
       - database
     networks:
       - ecommerce-net
+  
+  # Servicio para el frontend en Angular
+  frontend:
+    build:
+      context: ./frontend/ecommerce-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - auth-service
+      - product-service
+    networks:
+      - ecommerce-net
+
+# Servicio para servir la aplicación con Nginx
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./frontend/ecommerce-frontend/dist/ecommerce-frontend/browser:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+    networks:
+      - ecommerce-net
 
 networks:
   ecommerce-net:
     driver: bridge
+
 
 volumes:
   logs:
