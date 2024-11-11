@@ -1,11 +1,11 @@
 - id: 1
-  name: Erika
-  email: erika1@gmail.com
-  password: mypassword
+  name: Erika Villa
+  email: erika@example.com
+  password: erika
 - id: 2
-  name: Juan
-  email: juan@example.com
-  password: password123
+  name: Jorge Marquez
+  email: jorge@example.com
+  password: jorge
 - id: 3
   name: Maria
   email: maria@example.com

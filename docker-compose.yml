@@ -67,6 +67,7 @@ services:
       - DB_HOST=database
       - DB_PORT=5432
       - DB_NAME=ecommerce
+    restart: always
     volumes:
       - ./frontend/users-output:/output   # Carpeta para almacenar el archivo YAML
     depends_on:

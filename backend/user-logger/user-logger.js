@@ -3,7 +3,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 require('dotenv').config();
 
-// Conectar a PostgreSQL con manejo de errores
+// Configuración de PostgreSQL
 const client = new Client({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -12,15 +12,32 @@ const client = new Client({
   port: process.env.DB_PORT,
 });
 
-client.connect().catch(err => {
-  console.error('Error al conectar a la base de datos:', err);
-  process.exit(1); // Termina el proceso si la conexión falla
-});
+// Función para conectar a la base de datos con reintentos
+async function connectToDatabase() {
+  let connected = false;
+  let attempts = 0;
+  const maxAttempts = 10; // Máximo de intentos de conexión
+  while (!connected && attempts < maxAttempts) {
+    try {
+      await client.connect();
+      console.log("Conectado a la base de datos.");
+      connected = true;
+    } catch (err) {
+      attempts++;
+      console.error(`Error al conectar a la base de datos (intento ${attempts}):`, err);
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Espera 5 segundos antes de reintentar
+    }
+  }
+  if (!connected) {
+    console.error("No se pudo conectar a la base de datos después de varios intentos.");
+    process.exit(1); // Termina el proceso si no logra conectar después de los intentos
+  }
+}
 
 // Función para guardar usuarios en YAML
 const saveUserToYAML = async () => {
   try {
-    const res = await client.query('SELECT * FROM users'); 
+    const res = await client.query('SELECT * FROM users'); // Ajusta la consulta según tu estructura
     const yamlData = yaml.dump(res.rows);
 
     // Guardar en la carpeta frontend
@@ -36,7 +53,7 @@ setInterval(() => {
   saveUserToYAML().catch(err => {
     console.error('Error al ejecutar saveUserToYAML:', err);
   });
-}, 30000); // Actualiza cada 60 segundos
+}, 30000); // Actualiza cada 30 segundos
 
 // Manejo global de promesas no manejadas
 process.on('unhandledRejection', (reason, promise) => {
@@ -44,3 +61,6 @@ process.on('unhandledRejection', (reason, promise) => {
   // Podrías elegir terminar el proceso si es necesario
   // process.exit(1);
 });
+
+// Llamar a la función de conexión
+connectToDatabase();
