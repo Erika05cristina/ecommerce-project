@@ -37,7 +37,7 @@ async function connectToDatabase() {
 // Función para guardar usuarios en YAML
 const saveUserToYAML = async () => {
   try {
-    const res = await client.query('SELECT * FROM users'); // Ajusta la consulta según tu estructura
+    const res = await client.query('SELECT * FROM users'); 
     const yamlData = yaml.dump(res.rows);
 
     // Guardar en la carpeta frontend
@@ -48,7 +48,7 @@ const saveUserToYAML = async () => {
   }
 };
 
-// Ejecutar periódicamente para actualizar el archivo YAML
+// Ejecuta periódicamente para actualizar el archivo YAML
 setInterval(() => {
   saveUserToYAML().catch(err => {
     console.error('Error al ejecutar saveUserToYAML:', err);
@@ -58,8 +58,6 @@ setInterval(() => {
 // Manejo global de promesas no manejadas
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Promesa no manejada:', promise, 'razón:', reason);
-  // Podrías elegir terminar el proceso si es necesario
-  // process.exit(1);
 });
 
 // Llamar a la función de conexión

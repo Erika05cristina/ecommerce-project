@@ -6,3 +6,7 @@
   name: Jorge Marquez
   email: jorge@example.com
   password: jorge
+- id: 3
+  name: Roberto
+  email: roberto@example
+  password: roberto

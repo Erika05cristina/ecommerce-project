@@ -23,14 +23,17 @@ export class LoginComponent {
     this.userService.login(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Login exitoso:', response);
-        // Puedes almacenar un token o alguna información aquí si es necesario
-        this.router.navigate(['/products']);  // Redirigir al dashboard u otra página
+        this.router.navigate(['/products']);
       },
       error: (error) => {
         console.error('Error al hacer login:', error);
         this.errorMessage = 'Credenciales incorrectas. Intenta nuevamente.';
       }
     });
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
   }
 
 }
